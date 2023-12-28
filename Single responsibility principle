@@ -1,0 +1,47 @@
+#include <iostream>
+#include <fstream>
+#include <string>
+#include <vector>
+
+using namespace std;
+
+// Клас, що представляє одну єдину відповідальність: зберігання журналу повідомлень.
+class Journal {
+    vector<string> entries;
+
+public:
+    explicit Journal(const string& title)
+        : title_{title} {}
+
+    void add_entry(const string& entry) {
+        static int count = 1;
+        entries.push_back(to_string(count++) + ": " + entry);
+    }
+
+    const vector<string>& get_entries() const {
+        return entries;
+    }
+
+private:
+    string title_;
+};
+
+// Клас, відповідальний за збереження журналу
+class PersistenceManager {
+public:
+    static void save(const Journal& journal, const string& filename) {
+        ofstream ofs(filename);
+        for (const auto& e : journal.get_entries())
+            ofs << e << endl;
+    }
+};
+
+int main() {
+    Journal journal{"Мій Денник"};
+    journal.add_entry("Я вивчаю SOLID");
+    journal.add_entry("Принцип єдиної відповідальності важливий");
+
+    PersistenceManager::save(journal, "dennek.txt");
+
+    return 0;
+}
